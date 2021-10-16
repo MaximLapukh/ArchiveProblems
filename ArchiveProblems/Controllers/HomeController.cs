@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ArchiveProblems.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,20 @@ namespace ArchiveProblems.Controllers
 {
     public class HomeController:Controller
     {
+        public ProblemsContext _db { get; }
+        public HomeController(ProblemsContext db)
+        {
+            _db = db;
+        }
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult About()
         {
             return View();
+        }
+        public IActionResult Problems()
+        {
+            if (HttpContext.Request.Cookies.TryGetValue("User", out string username)) ViewBag["User"] = username; 
+            return View(_db.problems.ToList());
         }
     }
 }

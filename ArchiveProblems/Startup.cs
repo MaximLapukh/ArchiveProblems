@@ -1,4 +1,4 @@
-using ArchiveProblems.Models;
+﻿using ArchiveProblems.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +25,25 @@ namespace ArchiveProblems
             services.AddMvc();
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ProblemsContext>(options => options.UseSqlServer(connection));
-
+            var options = new DbContextOptionsBuilder<ProblemsContext>().UseSqlServer(connection).Options;
+            using(var db = new ProblemsContext(options))
+            {
+                if (!db.admins.Any()) db.admins.Add(new Admin() { name = "root", password = "123" });
+                if (!db.problems.Any()) db.problems.Add(
+                    new Problem()
+                    {
+                        name = "Amicable numbers",
+                        description = "Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n)." +
+                         " If d(a) = b and d(b) = a, where a ≠ b, then a and b are an amicable pair and each of a and b are called amicable numbers." +
+                         " For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore d(220) = 284. " +
+                         "The proper divisors of 284 are 1, 2, 4, 71 and 142; so d(284) = 220." +
+                         " Evaluate the sum of all the amicable numbers under 10000.",
+                        answer = "31626",
+                    });
+                if (!db.news.Any()) db.news.Add(new News() { name = "Server had started!", description = "Server had started!!!", date = DateTime.Now });
+                db.SaveChanges();
+            }
+           
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -45,7 +63,7 @@ namespace ArchiveProblems
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}");
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=About}");
             });
         }
     }

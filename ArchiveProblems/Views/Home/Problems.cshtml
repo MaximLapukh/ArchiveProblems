@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "All problems";
+}
+<h3>All problems</h3>
+<label>This case contains all problems.</label>
+<div class="container">
+    <ul class="navbar-nav flex-grow-1">
+        @foreach (var problem in Model)
+        {
+            <li class="nav-item  bg-white border-bottom box-shadow p-2">
+                <a class="nav-link text-dark w-100 " href="#">@problem.name</a>
+                <div>@problem.description.Substring(0,50)...</div>
+            </li>
+        }
+    </ul>
+</div>
