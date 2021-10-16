@@ -32,6 +32,8 @@ namespace ArchiveProblems
             }
 
             app.UseRouting();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
