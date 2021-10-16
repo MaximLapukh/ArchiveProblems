@@ -20,10 +20,17 @@ namespace ArchiveProblems.Controllers
         {
             return View();
         }
+        [HttpGet]
         public IActionResult Problems()
         {
             if (HttpContext.Request.Cookies.TryGetValue("User", out string username)) ViewBag["User"] = username; 
             return View(_db.problems.ToList());
+
+        }
+        [HttpGet]
+        public IActionResult News()
+        {
+            return View(_db.news.ToList());
         }
     }
 }

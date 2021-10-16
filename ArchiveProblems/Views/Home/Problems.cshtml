@@ -9,7 +9,12 @@
         {
             <li class="nav-item  bg-white border-bottom box-shadow p-2">
                 <a class="nav-link text-dark w-100 " href="#">@problem.name</a>
-                <div>@problem.description.Substring(0,50)...</div>
+                <div>
+                    @if (problem.description.Length > 200)
+                        @problem.description.Substring(0, 200)
+                    else
+                        @problem.description  ...
+                </div>
             </li>
         }
     </ul>
