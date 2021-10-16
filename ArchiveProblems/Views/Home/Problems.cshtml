@@ -8,7 +8,7 @@
         @foreach (var problem in Model)
         {
             <li class="nav-item  bg-white border-bottom box-shadow p-2">
-                <a class="nav-link text-dark w-100 " href="#">@problem.name</a>
+                <h3><a class="nav-link text-dark w-100 " href="#">@problem.name</a></h3>
                 <div>
                     @if (problem.description.Length > 200)
                         @problem.description.Substring(0, 200)
