@@ -5,14 +5,58 @@
 @if (Model == null)
 {
     <h3>You havn't account</h3>
-    <a href="~/Home/SignIn">Sign in</a> <br />
+    <a href="~/Home/SignIn">Sign in</a>
+    <br />
     <a href="~/Home/SignUp">Sign up</a>
 }
 else
 {
     <h3>Account</h3>
+
+
     <form method="post">
-        <input name="action" type="submit" value="signout"/>
+        <div class="container bg-white border-bottom box-shadow p-3">
+            <h5>Change data</h5>
+            <div class="row">
+                <div class=" col-3">
+                    <label>Name:</label>
+                </div>
+                <div class="col">
+                    <input type="text" name="name" value="@Model.name" />
+                </div>
+            </div>
+            <div class="row">
+                <div class=" col-3">
+                    <label>Password:</label>
+                </div>
+                <div class="col">
+                    <input type="password" name="password" value="@Model.password" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <input name="action" type="submit" value="Save" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form method="post">
+        <div class="container bg-white border-bottom box-shadow p-3">
+            <h5>Delete Account</h5>
+            <div class="row">
+                <div class="col">
+                    WARNING: Please be aware that these actions are not reversible.
+                </div>
+            </div>
+            <div class="row">
+                <div class=" col mt-2"> <input name="action" type="submit" value="Delete" /></div>
+            </div>
+        </div>
+    </form>
+
+    <form method="post">
+        <input name="action" type="submit" value="Sign out" />
     </form>
 }
 

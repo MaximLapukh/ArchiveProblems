@@ -10,7 +10,7 @@ namespace ArchiveProblems.Controllers
 {
     public class HomeController:Controller
     {
-        private const string USERNAME_KEY = "username";
+        private const string USERID_KEY = "userid";
         public ProblemsContext _db { get; }
         public HomeController(ProblemsContext db)
         {
@@ -34,9 +34,9 @@ namespace ArchiveProblems.Controllers
         [HttpGet]
         public IActionResult Account()
         {
-            if (HttpContext.Request.Cookies.TryGetValue(USERNAME_KEY, out string username))
+            if (HttpContext.Request.Cookies.TryGetValue(USERID_KEY, out string userid))
             {               
-                return View(_db.users.FirstOrDefault(u => u.name == username));
+                return View(_db.users.FirstOrDefault(u => u.Id == int.Parse(userid)));
             }
             else
             {
@@ -44,36 +44,51 @@ namespace ArchiveProblems.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Account(string action)
+        public IActionResult Account(User user,string action)
         {
-            if(action == "signout")
-            {
-                if (HttpContext.Request.Cookies.ContainsKey(USERNAME_KEY))
+            if (HttpContext.Request.Cookies.TryGetValue(USERID_KEY, out string userid))
+                if (action == "Sign out")
+                {               
+                    HttpContext.Response.Cookies.Delete(USERID_KEY);                
+                }else if(action == "Save")
                 {
-                    HttpContext.Response.Cookies.Delete(USERNAME_KEY);
+                    //TODO: validate data of user                
+                    if (_db.users.FirstOrDefault(u => u.name == user.name&&u.Id!=int.Parse(userid)) == null)
+                    {                        
+                        User curUser = _db.users.FirstOrDefault(u => u.Id == int.Parse(userid));
+                        curUser.name = user.name;
+                        curUser.password = user.password;
+                        _db.SaveChanges();
+                        return RedirectToAction("Account");
+                    }                
+                    return Redirect("~/Home/Result/" + (int)result.unsuccesSingUp);
+                }else if(action == "Delete")
+                {
+                    _db.users.Remove(_db.users.FirstOrDefault(u => u.Id == int.Parse(userid)));
+                    _db.SaveChanges();
+                    HttpContext.Response.Cookies.Delete(USERID_KEY);
                 }
-            }                      
-            return View();
-        }
+            return RedirectToAction("Account");
+        }      
         [HttpGet]
         public IActionResult SignUp()
         {
-            if (!HttpContext.Request.Cookies.ContainsKey(USERNAME_KEY)) return View();            
+            if (!HttpContext.Request.Cookies.ContainsKey(USERID_KEY)) return View();            
             else return RedirectToAction("About");
         }
         [HttpPost]
         public IActionResult SignUp(User user)
         {
-            if (isCorrectUser(user) && !HttpContext.Request.Cookies.ContainsKey(USERNAME_KEY))
+            if (isCorrectUser(user) && !HttpContext.Request.Cookies.ContainsKey(USERID_KEY))
             {
                 if (_db.users.FirstOrDefault(u => u.name == user.name) == null)
                 {
                     _db.users.Add(user);
                     _db.SaveChanges();
-                    return Redirect("~/Home/Result/"+(int)result.successSignUp);
+                    return Redirect("~/Home/Result/" + (int)result.successSignUp);
                 }              
             }
-            return Redirect("~/Home/Result/"+ (int)result.unsuccesSingUp);
+            return Redirect("~/Home/Result/" + (int)result.unsuccesSingUp);
         }
         [HttpGet]
         public IActionResult Result(int? id)
@@ -84,21 +99,21 @@ namespace ArchiveProblems.Controllers
         [HttpGet]
         public IActionResult SignIn()
         {
-            if(!HttpContext.Request.Cookies.ContainsKey(USERNAME_KEY))
+            if(!HttpContext.Request.Cookies.ContainsKey(USERID_KEY))
                 return View();
             else return RedirectToAction("About");
         }
         [HttpPost]
         public IActionResult SignIn(User user)
         {
-            if(isCorrectUser(user) && !HttpContext.Request.Cookies.ContainsKey(USERNAME_KEY))
+            if(isCorrectUser(user) && !HttpContext.Request.Cookies.ContainsKey(USERID_KEY))
             {
                 var curUser = _db.users.FirstOrDefault(u => u.name == user.name);
                 if (curUser!= null)
                 {
                     if(curUser.password == user.password)
                     {
-                        HttpContext.Response.Cookies.Append(USERNAME_KEY, user.name);
+                        HttpContext.Response.Cookies.Append(USERID_KEY, curUser.Id.ToString());
                         return RedirectToAction("Account");
                     }                        
                 }                
