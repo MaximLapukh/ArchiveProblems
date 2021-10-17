@@ -1,5 +1,6 @@
 ﻿using ArchiveProblems.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +23,62 @@ namespace ArchiveProblems.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult Problems()
+        public IActionResult Problems(int? id)
         {
-            return View(_db.problems.ToList());
+            if (id == null)
+            {
+                ViewBag.viewproblem = "all";
+                return View(_db.problems.ToList());
+            }
+            else
+            {
+                ViewBag.viewproblem = "one";
+                var curProblem = _db.problems.FirstOrDefault(p => p.Id == id);
+                if (curProblem != null) {
+                    if (HttpContext.Request.Cookies.TryGetValue(USERID_KEY, out string userid))
+                    {
+                        var user = _db.users.FirstOrDefault(u => u.Id == int.Parse(userid));
+
+                        ViewBag.solved = user.solvedProblems!= null && user.solvedProblems.FirstOrDefault(p => p.Id == id) != null;
+                   
+                        ViewBag.user = user;                       
+                    }
+                    return View(curProblem);
+                }
+                
+                return Redirect("About");
+            }            
+        }
+        [HttpPost]
+        public IActionResult Problems(int userid,int problemid, int answer)
+        {
+            var curProblem = _db.problems.FirstOrDefault(p => p.Id == problemid);
+            if (curProblem != null && curProblem.answer == answer.ToString())
+            {
+                var curUser = _db.users.FirstOrDefault(u => u.Id == userid);
+                if (curUser.solvedProblems == null) curUser.solvedProblems = new List<Problem>();
+                curUser.solvedProblems.Add(curProblem);
+                curProblem.countSolved++;
+                _db.SaveChanges();
+                
+                return Redirect("~/Home/Result/" + (int)result.rightAnswer);
+            }
+            return Redirect("~/Home/Result/" + (int)result.wrongAnswer);
         }
         [HttpGet]
-        public IActionResult News()
+        public IActionResult News(int? id)
         {
-            return View(_db.news.ToList());
+            if (id == null)
+            {
+                ViewBag.viewnews = "all";
+                return View(_db.news.ToList());
+            }else
+            {
+                ViewBag.viewnews = "one";
+                var curNews = _db.news.FirstOrDefault(n => n.Id == id);
+                if (curNews != null) return View(curNews);
+                else return Redirect("About");
+            }              
         }
         [HttpGet]
         public IActionResult Account()
@@ -126,6 +175,8 @@ namespace ArchiveProblems.Controllers
     {
         unsuccesSingUp = 0,
         successSignUp = 1,
-        unsuccesSignIn = 2
+        unsuccesSignIn = 2,
+        rightAnswer = 3,
+        wrongAnswer = 4
     }
 }

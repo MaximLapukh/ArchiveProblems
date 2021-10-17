@@ -11,7 +11,8 @@ namespace ArchiveProblems.Models
         public int Id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
-        public string answer { get; set; }
+        public DateTime date { get; set; }
+        public string answer { get; set; }//TODO: to int
         public int countSolved { get; set; }
     }
 }
