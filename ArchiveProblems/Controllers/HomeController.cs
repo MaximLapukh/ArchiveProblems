@@ -43,6 +43,18 @@ namespace ArchiveProblems.Controllers
                 return View();
             }
         }
+        [HttpPost]
+        public IActionResult Account(string action)
+        {
+            if(action == "signout")
+            {
+                if (HttpContext.Request.Cookies.ContainsKey(USERNAME_KEY))
+                {
+                    HttpContext.Response.Cookies.Delete(USERNAME_KEY);
+                }
+            }                      
+            return View();
+        }
         [HttpGet]
         public IActionResult SignUp()
         {
@@ -58,10 +70,10 @@ namespace ArchiveProblems.Controllers
                 {
                     _db.users.Add(user);
                     _db.SaveChanges();
-                    return Redirect("~/Home/Result/"+result.successSignUp);
+                    return Redirect("~/Home/Result/"+(int)result.successSignUp);
                 }              
             }
-            return Redirect("~/Home/Result/"+result.unsuccesSingUp);
+            return Redirect("~/Home/Result/"+ (int)result.unsuccesSingUp);
         }
         [HttpGet]
         public IActionResult Result(int? id)
@@ -91,14 +103,14 @@ namespace ArchiveProblems.Controllers
                     }                        
                 }                
             }
-            return Redirect("~/Home/Result/"+result.unsuccesSignIn);
+            return Redirect("~/Home/Result/"+ (int)result.unsuccesSignIn);
         }
         private bool isCorrectUser(User user) => user != null && (user.name != null && user.password != null);
     }
     enum result
     {
-        unsuccesSingUp,
-        successSignUp,
-        unsuccesSignIn
+        unsuccesSingUp = 0,
+        successSignUp = 1,
+        unsuccesSignIn = 2
     }
 }
