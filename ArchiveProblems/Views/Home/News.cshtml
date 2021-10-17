@@ -10,10 +10,10 @@
             <li class="nav-item  bg-white border-bottom box-shadow p-2">
                 <h5><a class="nav-link text-dark w-100 ">@news.name</a></h5>
                 <div>
-                @if (news.description.Length > 200)
-                    @news.description.Substring(0, 200) 
-                else
-                    @news.description  ...
+                    @if (news.description.Length > 200)
+                        @news.description.Substring(0, 200) 
+                    else
+                        @news.description  ...
                 </div>
             </li>
         }

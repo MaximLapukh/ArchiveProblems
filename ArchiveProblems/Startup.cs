@@ -47,7 +47,7 @@ namespace ArchiveProblems
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=About}");
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=About}/{id?}");
             });
         }
         private void DataInit(DbContextOptions<ProblemsContext> options)

@@ -1,0 +1,19 @@
+﻿@if (Model == 0)
+{
+    ViewData["Title"] = "Unsuccess";
+    <h3>Unsuccess!</h3>
+    <label>Maybe another user is using this name or your entered data is uncorrect.</label>
+}
+else if (Model == 1)
+{
+
+    ViewData["Title"] = "Success";
+    <h3>Success!</h3>
+    <label>You can <a href="~/Home/SignIn">sign in</a> right now.</label>
+}
+else if (Model == 2)
+{
+    ViewData["Title"] = "Unsuccess";
+    <h3>Unsuccess!</h3>
+    <label>Name or password that you entered incorrect or this account does not exist.</label>
+}
