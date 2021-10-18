@@ -1,4 +1,5 @@
-﻿<html xmlns="http://www.w3.org/1999/xhtml">
+﻿@inject ArchiveProblems.Models.ProblemsContext db
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>@ViewData["Title"]</title>
     <meta charset="utf-8" />
@@ -37,29 +38,37 @@
 
 
     <div class="container">
-       <div class="row h-75">
-           <div class="col-2 bg-white border-bottom box-shadow h-100 p-3 d-none d-lg-block ">
-               Recent news:
-               <ul class="navbar-nav flex-grow-1">
-                   <li class="nav-item"><a class="nav-link text-dark" href="#">test</a></li>
-                   <li class="nav-item"><a class="nav-link text-dark" href="#">test</a></li>
-                   <li class="nav-item"><a class="nav-link text-dark" href="#">test</a></li>
-               </ul>
-               Recent problems:
-               <ul class="navbar-nav flex-grow-1">
-                   <li class="nav-item"><a class="nav-link text-dark" href="#">test</a></li>
-                   <li class="nav-item"><a class="nav-link text-dark" href="#">test</a></li>
-                   <li class="nav-item"><a class="nav-link text-dark" href="#">test</a></li>
-               </ul>
-           </div>
-           <div class="col bg-white border-bottom box-shadow  ">
-           
-               <main class="container p-3">
-                   @RenderBody()
-               </main>  
-           
-           </div>
-       </div>
+        <div class="row h-75">
+            <div class="col-2 bg-white border-bottom box-shadow h-100 p-3 d-none d-lg-block ">
+                <div class="mb-3">
+                    <h6 class="border-bottom">Recent news:</h6>
+
+                    <ul class="navbar-nav flex-grow-1">
+                        @foreach (var news in db.news.OrderBy(n=>n.date).Take(5))
+                        {
+                            <li class="nav-item"><a class="nav-link text-dark" href="~/Home/News/@news.Id">@news.name</a></li>
+                        }
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <h6 class="border-bottom">  Recent problems:</h6>
+
+                    <ul class="navbar-nav flex-grow-1">
+                        @foreach (var problem in db.problems.OrderBy(n => n.date).Take(5))
+                        {
+                            <li class="nav-item"><a class="nav-link text-dark" href="~/Home/Problems/@problem.Id">@problem.name</a></li>
+                        }
+                    </ul>
+                </div>                             
+            </div>
+            <div class="col bg-white border-bottom box-shadow  ">
+
+                <main class="container p-3">
+                    @RenderBody()
+                </main>
+
+            </div>
+        </div>
     </div>
 
     <footer class="border-top footer text-muted">

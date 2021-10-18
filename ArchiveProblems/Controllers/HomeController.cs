@@ -115,14 +115,14 @@ namespace ArchiveProblems.Controllers
                         _db.SaveChanges();
                         return RedirectToAction("Account");
                     }                
-                    return Redirect("~/Home/Result/" + (int)result.unsuccesSingUp);
+                    return Redirect("~/Home/Result/" + (int)result.unsuccesSignUp);
                 }else if(action == "Delete")
                 {
                     _db.users.Remove(_db.users.FirstOrDefault(u => u.Id == int.Parse(userid)));
                     _db.SaveChanges();
                     HttpContext.Response.Cookies.Delete(USERID_KEY);
                 }
-            return RedirectToAction("Account");
+            return View();
         }      
         [HttpGet]
         public IActionResult SignUp()
@@ -142,7 +142,7 @@ namespace ArchiveProblems.Controllers
                     return Redirect("~/Home/Result/" + (int)result.successSignUp);
                 }              
             }
-            return Redirect("~/Home/Result/" + (int)result.unsuccesSingUp);
+            return Redirect("~/Home/Result/" + (int)result.unsuccesSignUp);
         }
         [HttpGet]
         public IActionResult Result(int? id)
@@ -178,7 +178,7 @@ namespace ArchiveProblems.Controllers
     }
     enum result
     {
-        unsuccesSingUp = 0,
+        unsuccesSignUp = 0,
         successSignUp = 1,
         unsuccesSignIn = 2,
         rightAnswer = 3,
