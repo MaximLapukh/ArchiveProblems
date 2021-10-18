@@ -9,13 +9,22 @@
         <ul class="navbar-nav flex-grow-1">
             @foreach (var problem in Model)
             {
+                bool solved = ViewBag.solvedProblems != null && ViewBag.solvedProblems.Contains(problem);
+
                 <li class="nav-item bg-white border-bottom box-shadow p-2">
-                    <h5><a class="nav-link text-dark w-100 " href="~/Home/Problems/@problem.Id">@problem.name</a></h5>
+                    <h5>
+                        <a class="nav-link text-dark w-100 " href="~/Home/Problems/@problem.Id">@problem.name</a> 
+                        @if (solved)
+                        {
+                            <label class="text-success"> answer: @problem.answer</label>
+                        }
+                   </h5>                      
+                    
                     <div>
                         @if (problem.description.Length > 200)
                             @problem.description.Substring(0, 200)
-                            else
-                                @problem.description  ...
+                        else
+                            @problem.description  ...                   
                     </div>
                 </li>
             }
@@ -31,7 +40,7 @@ else if (ViewBag.viewproblem == "one")
     <div class="container bg-white border-bottom box-shadow p-2 w-50 mt-4">
         <div class="row d-flex justify-content-center"><h5>Answer</h5></div>
         <div class="row d-flex justify-content-center">
-            @if (ViewBag.user == null)
+            @if (!ViewBag.signIn)
             {
                 <label><a href="~/Home/SignIn">Sign in</a> to check answer</label>
             }
@@ -44,7 +53,7 @@ else if (ViewBag.viewproblem == "one")
                 else
                 {
                     <form method="post">
-                        <input type="hidden" name="userid" value="@ViewBag.user.Id"/>
+                        <input type="hidden" name="userid" value="@ViewBag.userid"/>
                         <input type="hidden" name="problemid" value="@Model.Id"/>
                         <input type="number" name="answer"/>
                         <input type="submit" value="Check"/>

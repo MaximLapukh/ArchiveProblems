@@ -13,6 +13,6 @@ namespace ArchiveProblems.Models
         public string description { get; set; }
         public DateTime date { get; set; }
         public string answer { get; set; }//TODO: to int
-        public int countSolved { get; set; }
+        public List<User> userSolved { get; set; }
     }
 }

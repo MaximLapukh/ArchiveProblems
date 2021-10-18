@@ -25,23 +25,30 @@ namespace ArchiveProblems.Controllers
         [HttpGet]
         public IActionResult Problems(int? id)
         {
+            User user = null;
+
+            if (HttpContext.Request.Cookies.TryGetValue(USERID_KEY, out string userid))
+                user = _db.users.Include(u=>u.solvedProblems).FirstOrDefault(u => u.Id == int.Parse(userid));
+
             if (id == null)
             {
                 ViewBag.viewproblem = "all";
+                if(user != null) ViewBag.solvedProblems = user.solvedProblems;
                 return View(_db.problems.ToList());
             }
             else
             {
                 ViewBag.viewproblem = "one";
                 var curProblem = _db.problems.FirstOrDefault(p => p.Id == id);
-                if (curProblem != null) {
-                    if (HttpContext.Request.Cookies.TryGetValue(USERID_KEY, out string userid))
+                if (curProblem != null) {                      
+                    if (user != null)
                     {
-                        var user = _db.users.FirstOrDefault(u => u.Id == int.Parse(userid));
-
-                        ViewBag.solved = user.solvedProblems!= null && user.solvedProblems.FirstOrDefault(p => p.Id == id) != null;
-                   
-                        ViewBag.user = user;                       
+                        ViewBag.signIn = true;
+                        ViewBag.userid = user.Id;
+                        ViewBag.solved = user.solvedProblems.Contains(curProblem);
+                    }else
+                    {
+                        ViewBag.signIn = false;
                     }
                     return View(curProblem);
                 }
@@ -54,11 +61,9 @@ namespace ArchiveProblems.Controllers
         {
             var curProblem = _db.problems.FirstOrDefault(p => p.Id == problemid);
             if (curProblem != null && curProblem.answer == answer.ToString())
-            {
-                var curUser = _db.users.FirstOrDefault(u => u.Id == userid);
-                if (curUser.solvedProblems == null) curUser.solvedProblems = new List<Problem>();
+            {  
+                var curUser = _db.users.Include(u=>u.solvedProblems).FirstOrDefault(u => u.Id == userid);
                 curUser.solvedProblems.Add(curProblem);
-                curProblem.countSolved++;
                 _db.SaveChanges();
                 
                 return Redirect("~/Home/Result/" + (int)result.rightAnswer);
