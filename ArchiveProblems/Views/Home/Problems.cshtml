@@ -35,7 +35,7 @@ else if (ViewBag.viewproblem == "one")
 {
     ViewData["Title"] = Model.name;
     <h3>@Model.name</h3>
-    <label>@Model.date</label>
+    <label>@Model.date.ToShortDateString()</label>
     <div>@Model.description</div>
     <div class="container bg-white border-bottom box-shadow p-2 w-50 mt-4">
         <div class="row d-flex justify-content-center"><h5>Answer</h5></div>
