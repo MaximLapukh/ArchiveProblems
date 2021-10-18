@@ -1,0 +1,29 @@
+﻿@{ViewData["Title"] = "All problems";} 
+
+<h3>All problems</h3>
+<label>This case contains all problems.</label>
+<div class="container">
+    <ul class="navbar-nav flex-grow-1">
+        @foreach (var problem in Model)
+        {
+            bool solved = ViewBag.solvedProblems != null && ViewBag.solvedProblems.Contains(problem);
+
+            <li class="nav-item bg-white border-bottom box-shadow p-2">
+                <h5>
+                    <a class="nav-link text-dark w-100 " href="~/Problems/Problem/@problem.Id">@problem.name</a>
+                    @if (solved)
+                    {
+                        <label class="text-success"> answer: @problem.answer</label>
+                    }
+                </h5>
+
+                <div>
+                    @if (problem.description.Length > 200)
+                        @problem.description.Substring(0, 200)
+                        else
+                            @problem.description  ...
+                </div>
+            </li>
+        }
+    </ul>
+</div>

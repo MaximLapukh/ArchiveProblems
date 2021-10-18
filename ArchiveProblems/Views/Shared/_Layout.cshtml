@@ -22,13 +22,13 @@
                             <a class="nav-link text-dark" href="~/Home/About">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="~/Home/Problems">Problems</a>
+                            <a class="nav-link text-dark" href="~/Problems/All">Problems</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="~/Home/News">News</a>
+                            <a class="nav-link text-dark" href="~/News/All">News</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="~/Home/Account">Account</a>
+                            <a class="nav-link text-dark" href="~/Account/Account">Account</a>
                         </li>
                     </ul>
                 </div>
@@ -36,37 +36,32 @@
         </nav>
     </header>
 
-
     <div class="container">
         <div class="row h-75">
             <div class="col-2 bg-white border-bottom box-shadow h-100 p-3 d-none d-lg-block ">
                 <div class="mb-3">
                     <h6 class="border-bottom">Recent news:</h6>
-
                     <ul class="navbar-nav flex-grow-1">
                         @foreach (var news in db.news.OrderBy(n=>n.date).Take(5))
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" href="~/Home/News/@news.Id">@news.name</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" href="~/News/News/@news.Id">@news.name</a></li>
                         }
                     </ul>
                 </div>
                 <div class="mb-3">
                     <h6 class="border-bottom">  Recent problems:</h6>
-
                     <ul class="navbar-nav flex-grow-1">
                         @foreach (var problem in db.problems.OrderBy(n => n.date).Take(5))
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" href="~/Home/Problems/@problem.Id">@problem.name</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" href="~/Problems/Problem/@problem.Id">@problem.name</a></li>
                         }
                     </ul>
                 </div>                             
             </div>
             <div class="col bg-white border-bottom box-shadow  ">
-
                 <main class="container p-3">
                     @RenderBody()
                 </main>
-
             </div>
         </div>
     </div>
@@ -79,7 +74,6 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

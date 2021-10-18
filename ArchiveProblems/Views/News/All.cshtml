@@ -1,0 +1,19 @@
+﻿@{ViewData["Title"] = "All news"; }
+<h3>All news</h3>
+<label>This case contains all news.</label>
+<div class="container">
+    <ul class="navbar-nav flex-grow-1">
+        @foreach (var news in Model)
+        {
+            <li class="nav-item  bg-white border-bottom box-shadow p-2">
+                <h5><a class="nav-link text-dark w-100 " href="~/News/News/@news.Id">@news.name</a></h5>
+                <div>
+                    @if (news.description.Length > 200)
+                        @news.description.Substring(0, 200)
+                        else
+                            @news.description ...
+                </div>
+            </li>
+        }
+    </ul>
+</div>

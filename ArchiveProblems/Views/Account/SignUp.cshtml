@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Sign up";
+}
+<h3>Sign up</h3>
+<h6> or <a href="~/Account/SignIn">sign in</a></h6>
+<label>Enter your name and password.</label>
+<form method="post">
+    <div class="container">
+        <div class="row">
+            <div class=" col-3">
+                <label>Enter your name:</label>
+            </div>
+            <div class="col">
+                <input type="text" name="name" value="username" />
+            </div>
+        </div>
+        <div class="row">
+            <div class=" col-3">
+                <label>Enter your password:</label>
+            </div>
+            <div class="col">
+                <input type="password" name="password" value="" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <input type="submit" value="Sign up" />
+            </div>
+        </div>
+    </div>
+</form>
