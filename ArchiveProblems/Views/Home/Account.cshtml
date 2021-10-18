@@ -13,6 +13,17 @@ else
 {
     <h3>Account</h3>
 
+    <div class="container bg-white border-bottom box-shadow p-3">
+        <h5>Solved Problems</h5>
+        <div class="row">
+            @foreach (var problem in Model.solvedProblems)
+            {
+                <div class="col-12">
+                    <a class="nav-link text-dark w-auto" href="~/Home/Problems/@problem.Id" >#@problem.Id @problem.name</a>
+                </div>
+            }
+        </div>
+    </div>
 
     <form method="post">
         <div class="container bg-white border-bottom box-shadow p-3">
