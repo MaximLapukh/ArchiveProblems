@@ -60,7 +60,7 @@ namespace ArchiveProblems.Controllers
         public IActionResult Problems(int userid,int problemid, int answer)
         {
             var curProblem = _db.problems.FirstOrDefault(p => p.Id == problemid);
-            if (curProblem != null && curProblem.answer == answer.ToString())
+            if (curProblem != null && curProblem.answer == answer)
             {  
                 var curUser = _db.users.Include(u=>u.solvedProblems).FirstOrDefault(u => u.Id == userid);
                 curUser.solvedProblems.Add(curProblem);
@@ -90,7 +90,7 @@ namespace ArchiveProblems.Controllers
         {
             if (HttpContext.Request.Cookies.TryGetValue(USERID_KEY, out string userid))
             {               
-                return View(_db.users.FirstOrDefault(u => u.Id == int.Parse(userid)));
+                return View(_db.users.Include(u=>u.solvedProblems).FirstOrDefault(u => u.Id == int.Parse(userid)));
             }
             else
             {

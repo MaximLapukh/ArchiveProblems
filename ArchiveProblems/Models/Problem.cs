@@ -12,7 +12,7 @@ namespace ArchiveProblems.Models
         public string name { get; set; }
         public string description { get; set; }
         public DateTime date { get; set; }
-        public string answer { get; set; }//TODO: to int
+        public int answer { get; set; }
         public List<User> userSolved { get; set; }
     }
 }
