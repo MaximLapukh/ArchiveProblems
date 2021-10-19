@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "New problem";
+    Layout = "_LayoutAdmin";
+}
+<h3 class="m-4">Creating new problem</h3>
+
+<form method="post">
+    <div class="container">
+        @await Html.PartialAsync("_ProblemForm", null)
+        <div class="d-flex justify-content-end w-75">
+            <input class="pl-3 pr-3" type="submit" value="Add" />
+        </div>
+    </div>
+</form>

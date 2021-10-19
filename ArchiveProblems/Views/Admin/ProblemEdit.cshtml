@@ -1,0 +1,17 @@
+﻿@{
+    @using ArchiveProblems.Models
+    Problem problem = Model;
+    ViewData["Title"] = "Edit problem";
+    Layout = "_LayoutAdmin";
+}
+<h3 class="m-4">Editing problem</h3>
+
+<form method="post">
+    <div class="container">
+        <input type="hidden" name="Id" value="@problem.Id"/>
+        @await Html.PartialAsync("_ProblemForm", problem)
+        <div class="d-flex justify-content-end w-75">
+            <input class="pl-3 pr-3" type="submit" value="Update" />
+        </div>
+    </div>
+</form>

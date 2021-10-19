@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Sign in Admin panel";
+    Layout = null;
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>@ViewData["Title"]</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>@ViewData["Title"]</h3>
+
+                @await Html.PartialAsync("_SignForm", ViewData["Title"])
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
