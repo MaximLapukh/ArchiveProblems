@@ -1,5 +1,6 @@
 ﻿using ArchiveProblems.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -22,11 +23,12 @@ namespace ArchiveProblems
         }
         public void ConfigureServices(IServiceCollection services)
         {
+   
             services.AddMvc();
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ProblemsContext>(options => options.UseSqlServer(connection));
-            var options = new DbContextOptionsBuilder<ProblemsContext>().UseSqlServer(connection).Options;
 
+            var options = new DbContextOptionsBuilder<ProblemsContext>().UseSqlServer(connection).Options;
             DataInit(options);
         }
 
