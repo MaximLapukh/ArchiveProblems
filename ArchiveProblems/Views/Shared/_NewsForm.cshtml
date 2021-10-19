@@ -1,0 +1,19 @@
+﻿
+<div class="row mb-3">
+    <div class="col-2">
+        <label>Enter name:</label>
+    </div>
+    <div class="col">
+        <input name="name" value="@if (Model != null) @Model.name" />
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-2">
+        <label>Enter description:</label>
+    </div>
+    <div class="col">
+        <textarea class="h-100 w-75" name="description" style="padding-bottom:250px;">@if (Model != null) @Model.description</textarea>
+    </div>
+</div>
+

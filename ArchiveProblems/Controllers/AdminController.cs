@@ -11,7 +11,6 @@ namespace ArchiveProblems.Controllers
     public class AdminController:Controller
     {
         private readonly ProblemsContext _db;
-
         public AdminController(ProblemsContext db)
         {
             _db = db;
@@ -23,7 +22,6 @@ namespace ArchiveProblems.Controllers
                 return View();
             else return RedirectToAction("Problems");
         }
-
         [HttpPost]
         public IActionResult SignIn(Admin admin)
         {
@@ -47,6 +45,8 @@ namespace ArchiveProblems.Controllers
             }
             return RedirectToAction("SignIn");
         }
+
+        #region Problem
         [HttpGet]
         public IActionResult Problems()
         {
@@ -72,10 +72,10 @@ namespace ArchiveProblems.Controllers
                     if (curProblem != null)
                     {
                         _db.problems.Remove(curProblem);
-                        _db.SaveChanges();
-                        return RedirectToAction("Problems");
+                        _db.SaveChanges();                        
                     }                   
                 }
+                return RedirectToAction("Problems");
             }
             return RedirectToAction("SignIn");
         }
@@ -88,7 +88,6 @@ namespace ArchiveProblems.Controllers
             }
             return RedirectToAction("SignIn");
         }
-
         [HttpPost]
         public IActionResult ProblemAdd(Problem problem)
         {
@@ -112,7 +111,6 @@ namespace ArchiveProblems.Controllers
             }
             return RedirectToAction("SignIn");
         }
-
         [HttpPost]
         public IActionResult ProblemEdit(Problem problem)
         {
@@ -128,11 +126,13 @@ namespace ArchiveProblems.Controllers
                         _db.SaveChanges();
                     }
                 }
-                else return RedirectToAction("Problems");
+                return RedirectToAction("Problems");
             }
             return RedirectToAction("SignIn");
         }
+        #endregion
 
+        #region News
         [HttpGet]
         public IActionResult News()
         {
@@ -142,6 +142,79 @@ namespace ArchiveProblems.Controllers
             }
             return RedirectToAction("SignIn");       
         }
-
+        [HttpPost]
+        public IActionResult News(string action,int? newsId)
+        {
+            if (HttpContext.Request.Cookies.ContainsKey(helper.ADMIN_KEY))
+            {
+                if (action == "Add")
+                {
+                    return RedirectToAction("NewsAdd");
+                }
+                else if (action == "Delete" && newsId != null)
+                {
+                    var curNews = _db.news.FirstOrDefault(p => p.Id == newsId);
+                    if (curNews != null)
+                    {
+                        _db.news.Remove(curNews);
+                        _db.SaveChanges();                        
+                    }
+                }
+                return RedirectToAction("News");
+            }
+            return RedirectToAction("SignIn");
+        }
+        [HttpGet]
+        public IActionResult NewsAdd()
+        {
+            if (HttpContext.Request.Cookies.ContainsKey(helper.ADMIN_KEY))
+            {
+                return View();
+            }
+            return RedirectToAction("SignIn");
+        }
+        [HttpPost]
+        public IActionResult NewsAdd(News news)
+        {
+            if (HttpContext.Request.Cookies.ContainsKey(helper.ADMIN_KEY) && news != null)
+            {
+                news.date = DateTime.Now;
+                _db.news.Add(news);
+                _db.SaveChanges();
+                return RedirectToAction("News");
+            }
+            return RedirectToAction("SignIn");
+        }
+        [HttpGet]
+        public IActionResult NewsEdit(int? id)
+        {
+            if (HttpContext.Request.Cookies.ContainsKey(helper.ADMIN_KEY))
+            {
+                if (id != null)
+                    return View(_db.news.FirstOrDefault(p => p.Id == id));
+                else return RedirectToAction("News");
+            }
+            return RedirectToAction("SignIn");
+        }
+        [HttpPost]
+        public IActionResult NewsEdit(News news)
+        {
+            if (HttpContext.Request.Cookies.ContainsKey(helper.ADMIN_KEY))
+            {
+                if (news != null)
+                {
+                    var curNews = _db.news.FirstOrDefault(p => p.Id == news.Id);
+                    if (curNews != null)
+                    {
+                        curNews.name = news.name;
+                        curNews.description = news.description;
+                        _db.SaveChanges();
+                    }
+                }
+                return RedirectToAction("News");
+            }
+            return RedirectToAction("SignIn");
+        }
+        #endregion
     }
 }
