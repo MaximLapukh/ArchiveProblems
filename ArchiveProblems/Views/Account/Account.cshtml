@@ -2,61 +2,83 @@
     ViewData["Title"] = "Account";
 }
 
-<h3>Account</h3>
+@if (User.Identity.IsAuthenticated)
+{
 
-<div class="container bg-white border-bottom box-shadow p-3">
-    <h5>Solved Problems</h5>
-    <div class="row">
-        @foreach (var problem in Model.solvedProblems)
-        {
-            <div class="col-12">
-                <a class="nav-link text-dark w-auto" href="~/Problems/Problem/@problem.Id">#@problem.Id @problem.name</a>
-            </div>
-        }
-    </div>
-</div>
+    <h3>@User.Identity.Name</h3>
 
-<form method="post">
-    <div class="container bg-white border-bottom box-shadow p-3">
-        <h5>Change data</h5>
-        <div class="row">
-            <div class=" col-3">
-                <label>Name:</label>
+    <form method="post" asp-controller="Account" asp-action="ChangePassword">
+        <div class="container bg-white border-bottom box-shadow p-3">
+            <h5>Change password</h5>
+            <div class="row">
+                <div class="col">
+                    <label>New password: DON't WORK!!! </label>
+                </div>
             </div>
-            <div class="col">
-                <input type="text" name="name" value="@Model.name" />
-            </div>
-        </div>
-        <div class="row">
-            <div class=" col-3">
-                <label>Password:</label>
-            </div>
-            <div class="col">
-                <input type="password" name="password" value="@Model.password" />
+            <div class="row">
+                <div class=" col mt-2"><input type="submit" value="Change" /></div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <input name="action" type="submit" value="Save" />
-            </div>
-        </div>
-    </div>
-</form>
+    </form>
 
-<form method="post">
-    <div class="container bg-white border-bottom box-shadow p-3">
-        <h5>Delete Account</h5>
-        <div class="row">
-            <div class="col">
-                WARNING: Please be aware that these actions are not reversible.
+    <form method="post" asp-controller="Account" asp-action="Delete">
+        <div class="container bg-white border-bottom box-shadow p-3">
+            <h5>Delete Account</h5>
+            <div class="row">
+                <div class="col">
+                    WARNING: Please be aware that these actions are not reversible.
+                </div>
+            </div>
+            <div class="row">
+                <div class=" col mt-2"><input type="submit" value="Delete" /></div>
             </div>
         </div>
-        <div class="row">
-            <div class=" col mt-2"> <input name="action" type="submit" value="Delete" /></div>
-        </div>
-    </div>
-</form>
+    </form>
 
-<form method="post">
-    <input name="action" type="submit" value="Sign out" />
-</form>
+    if (!Model)
+    {
+        <form method="post" asp-controller="Account" asp-action="GetAdmin">
+            <div class="container bg-white border-bottom box-shadow p-3">
+                <h5>Get admin role</h5>
+                <div class="row">
+                    <div class="col">
+                        Enter secret key:
+                    </div>
+                    <div class="col">
+                        <input type="password" name="adminKey" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class=" col mt-2"><input type="submit" value="Get" /></div>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <form method="post" asp-controller="Account" asp-action="ExitAdmin">
+            <div class="container bg-white border-bottom box-shadow p-3">
+                <h5>Exit from admin</h5>
+                <div class="row">                   
+                </div>
+                <div class="row">
+                    <div class=" col mt-2"><input type="submit" value="Exit" /></div>
+                    <div class=" col mt-2"><a href="~/Admin/Problems">admin</a></div>
+                </div>
+            </div>
+        </form>
+    }
+
+
+    <form method="post" asp-controller="Account" asp-action="SignOut">
+        <input type="submit" value="Sign out" />
+    </form>
+}
+else
+{
+    <h3>You havn't account</h3>
+    <label>
+        <a href="~/Account/SignIn">Sign in</a> or <a href="~/Account/SignUp">Sign up</a>
+    </label>
+}
+

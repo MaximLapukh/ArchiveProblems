@@ -1,4 +1,5 @@
 ﻿using ArchiveProblems.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,52 +13,49 @@ namespace ArchiveProblems.Controllers
     public class ProblemsController:Controller
     {
         public readonly ProblemsContext _db;
-        public ProblemsController(ProblemsContext db)
+        private readonly UserManager<User> _userManager;
+        public ProblemsController(ProblemsContext db, UserManager<User> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            User user = null;
+            var user = await _userManager.GetUserAsync(User);
 
-            if (HttpContext.Request.Cookies.TryGetValue(helper.USERID_KEY, out string userid))
-                user = _db.users.Include(u => u.solvedProblems).FirstOrDefault(u => u.Id == int.Parse(userid));
-
-            if (user != null) ViewBag.solvedProblems = user.solvedProblems;
+            if (user != null) 
+                ViewBag.solvedProblems = _db.Users.Include(u=>u.solvedProblems)
+                    .FirstOrDefault(u=>u.Id==user.Id).solvedProblems;
             return View(_db.problems.ToList());
         }
         [HttpGet]
-        public IActionResult Problem(int? id)
-        {
+        public async Task<IActionResult> Problem(int? id)
+        {           
             if (id != null)
             {
                 var curProblem = _db.problems.FirstOrDefault(p => p.Id == id);
                 if (curProblem != null)
-                {
-                    if (HttpContext.Request.Cookies.TryGetValue(helper.USERID_KEY, out string userid))
-                    {
-                        var user = _db.users.Include(u => u.solvedProblems).FirstOrDefault(u => u.Id == int.Parse(userid));
-                        ViewBag.signIn = true;
-                        ViewBag.userid = user.Id;
-                        ViewBag.solved = user.solvedProblems.Contains(curProblem);
-                    }
-                    else
-                    {
-                        ViewBag.signIn = false;
-                    }
+                {                  
+                    var user = await _userManager.GetUserAsync(User);
+                    var solvedProblems = _db.Users.Include(u => u.solvedProblems)
+                    .FirstOrDefault(u => u.Id == user.Id).solvedProblems;
+
+                    ViewBag.solved = solvedProblems != null && solvedProblems.Contains(curProblem);
+                    
                     return View(curProblem);
                 }
             }
             return RedirectToAction("All");
         }
         [HttpPost]
-        public IActionResult Problem(int userid, int problemid, int answer)
-        {
-            var curProblem = _db.problems.FirstOrDefault(p => p.Id == problemid);
-            if (curProblem != null && curProblem.answer == answer)
+        public async Task<IActionResult> CheckAsnwer(int problemId, int answer)
+        {           
+            var curProblem = _db.problems.FirstOrDefault(p => p.Id == problemId);
+            if (curProblem !=null && curProblem.answer == answer)
             {
-                var curUser = _db.users.Include(u => u.solvedProblems).FirstOrDefault(u => u.Id == userid);
-                curUser.solvedProblems.Add(curProblem);
+                var user = await _userManager.GetUserAsync(User);
+                if (user.solvedProblems == null) user.solvedProblems = new List<Problem>();
+                user.solvedProblems.Add(curProblem);
                 _db.SaveChanges();
 
                 return Redirect("~/Home/Result/" + (int)result.rightAnswer);

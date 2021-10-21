@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,14 +23,10 @@ namespace ArchiveProblems
             Configuration = configuration;
         }
         public void ConfigureServices(IServiceCollection services)
-        {
-   
-            services.AddMvc();
-            var connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ProblemsContext>(options => options.UseSqlServer(connection));
-
-            var options = new DbContextOptionsBuilder<ProblemsContext>().UseSqlServer(connection).Options;
-            DataInit(options);
+        {   
+            services.AddMvc();    
+            services.AddDbContext<ProblemsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ProblemsContext>();     
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -47,13 +44,20 @@ namespace ArchiveProblems
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=About}/{id?}");
             });
         }
-        private void DataInit(DbContextOptions<ProblemsContext> options)
+        private void DataInit()
         {
+            var options = new DbContextOptionsBuilder<ProblemsContext>()
+                .UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                .Options;
+           
             using (var db = new ProblemsContext(options))
             {
                 if (!db.admins.Any()) db.admins.Add(new Admin() { name = "root", password = "123" });

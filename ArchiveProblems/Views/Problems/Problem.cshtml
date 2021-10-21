@@ -6,7 +6,7 @@
 <div class="container bg-white border-bottom box-shadow p-2 w-50 mt-4">
     <div class="row d-flex justify-content-center"><h5>Answer</h5></div>
     <div class="row d-flex justify-content-center">
-        @if (!ViewBag.signIn)
+        @if (!User.Identity.IsAuthenticated)
         {
             <label><a href="~/Account/SignIn">Sign in</a> to check answer</label>
         }
@@ -18,9 +18,8 @@
             }
             else
             {
-                <form method="post">
-                    <input type="hidden" name="userid" value="@ViewBag.userid" />
-                    <input type="hidden" name="problemid" value="@Model.Id" />
+                <form method="post" asp-controller="Problems" asp-action="CheckAsnwer">
+                    <input type="hidden" name="problemId" value="@Model.Id" />
                     <input type="number" name="answer" />
                     <input type="submit" value="Check" />
                 </form>

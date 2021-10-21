@@ -1,7 +1,28 @@
-﻿@{
-    ViewData["Title"] = "Sign up";
-}
-<h3>@ViewData["Title"]</h3>
-<h6> or <a href="~/Account/SignIn">sign in</a></h6>
-<label>Enter your name and password.</label>
-@await Html.PartialAsync("_SignForm", ViewData["Title"])
+﻿@model ArchiveProblems.ViewModels.SignUpViewModel
+<h2>Sign up</h2>
+<form method="post" asp-controller="Account" asp-action="SignUp">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div>
+        <label asp-for="Name"></label><br />
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Email"></label><br />
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div>
+        <label asp-for="Password"></label><br />
+        <input asp-for="Password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div>
+        <label asp-for="PasswordConfirm"></label><br />
+        <input asp-for="PasswordConfirm" />
+        <span asp-validation-for="PasswordConfirm"></span>
+    </div>
+    <div>
+        <input type="submit" value="Sign up" />
+    </div>
+</form>

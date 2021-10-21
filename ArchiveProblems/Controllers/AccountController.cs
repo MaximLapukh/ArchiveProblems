@@ -1,9 +1,12 @@
 ﻿using ArchiveProblems.Models;
+using ArchiveProblems.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,94 +14,98 @@ namespace ArchiveProblems.Controllers
 {
     public class AccountController:Controller
     {
-        public readonly ProblemsContext _db;
-        public AccountController(ProblemsContext db)
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private const string ADMIN_KEY = "123";
+        internal const string ADMIN_ROLE_NAME = "admin";
+
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            _db = db;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
-        [HttpGet]
-        public IActionResult Account()
+        public async Task<IActionResult> Account()
         {
-            if (HttpContext.Request.Cookies.TryGetValue(helper.USERID_KEY, out string userid))
+            if (User.Identity.IsAuthenticated)
             {
-                return View(_db.users.Include(u => u.solvedProblems).FirstOrDefault(u => u.Id == int.Parse(userid)));
+                var user = await _userManager.GetUserAsync(User);
+                var roles = await _userManager.GetRolesAsync(user);
+                return View(roles.Contains(ADMIN_ROLE_NAME));
             }
-            else
-            {
-                return View("Null",null);
-            }
-        }
-        [HttpPost]
-        public IActionResult Account(User user, string action)
-        {
-            if (HttpContext.Request.Cookies.TryGetValue(helper.USERID_KEY, out string userid))
-                if (action == "Sign out")
-                {
-                    HttpContext.Response.Cookies.Delete(helper.USERID_KEY);                    
-                }
-                else if (action == "Save")
-                {                      
-                    if (helper.isCorrectUser(user) && _db.users.FirstOrDefault(u => u.name == user.name && u.Id != int.Parse(userid)) == null)
-                    {
-                        User curUser = _db.users.FirstOrDefault(u => u.Id == int.Parse(userid));
-                        curUser.name = user.name;
-                        curUser.password = user.password;
-                        _db.SaveChanges();
-                        return RedirectToAction("Account");
-                    }
-                    return Redirect("~/Home/Result/" + (int)result.unsuccesSignUp);
-                }
-                else if (action == "Delete")
-                {
-                    _db.users.Remove(_db.users.FirstOrDefault(u => u.Id == int.Parse(userid)));
-                    _db.SaveChanges();
-                    HttpContext.Response.Cookies.Delete(helper.USERID_KEY);
-                }
-            return RedirectToAction("Account");
+            return View();
         }
         [HttpGet]
         public IActionResult SignIn()
         {
-            if (!HttpContext.Request.Cookies.ContainsKey(helper.USERID_KEY))
-                return View();
-            else return RedirectToAction("Account");
+            return View();
         }
         [HttpPost]
-        public IActionResult SignIn(User user)
+        public async Task<IActionResult> SignIn(SignInViewModel model)
         {
-            if (helper.isCorrectUser(user) && !HttpContext.Request.Cookies.ContainsKey(helper.USERID_KEY))
+            if (ModelState.IsValid)
             {
-                var curUser = _db.users.FirstOrDefault(u => u.name == user.name);
-                if (curUser != null)
+                var result = await _signInManager.PasswordSignInAsync(model.Name, model.Password, model.RememberMe, false);
+                if (!result.Succeeded)
                 {
-                    if (curUser.password == user.password)
-                    {
-                        HttpContext.Response.Cookies.Append(helper.USERID_KEY, curUser.Id.ToString());
-                        return RedirectToAction("Account");
-                    }
+                    ModelState.AddModelError("", "Incorrect password or name!");
                 }
             }
-            return Redirect("~/Home/Result/" + (int)result.unsuccesSignIn);
+            return RedirectToAction("Account");
         }
         [HttpGet]
         public IActionResult SignUp()
         {
-            if (!HttpContext.Request.Cookies.ContainsKey(helper.USERID_KEY)) return View();
-            else return RedirectToAction("Account");
+            return View();
         }
         [HttpPost]
-        public IActionResult SignUp(User user)
+        public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
-            if (helper.isCorrectUser(user) && !HttpContext.Request.Cookies.ContainsKey(helper.USERID_KEY))
+            if (ModelState.IsValid)
             {
-                if (_db.users.FirstOrDefault(u => u.name == user.name) == null)
+                var user = new User() { UserName = model.Name, Email = model.Email };
+                var register = await _userManager.CreateAsync(user, model.Password);
+                if (register.Succeeded)
                 {
-                    _db.users.Add(user);
-                    _db.SaveChanges();
-                    return Redirect("~/Home/Result/" + (int)result.successSignUp);
+                    await _signInManager.SignInAsync(user, false);
                 }
             }
-            return Redirect("~/Home/Result/" + (int)result.unsuccesSignUp);
+            return RedirectToAction("Account");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SignOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Account");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete()
+        {
+            User user = await _userManager.FindByIdAsync(_userManager.GetUserAsync(User).Id.ToString());
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
+            return RedirectToAction("Account");
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAdmin(string adminKey)
+        {
+            if(adminKey == ADMIN_KEY)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                await _userManager.AddToRoleAsync(user, ADMIN_ROLE_NAME);
+            }
+            return RedirectToAction("Account");
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExitAdmin()
+        {
+           
+            var user = await _userManager.GetUserAsync(User);
+            await _userManager.RemoveFromRoleAsync(user, ADMIN_ROLE_NAME);
+            return RedirectToAction("Account");
         }
     }
 }
